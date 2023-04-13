@@ -40,3 +40,64 @@ create/drop database with one command -> automate
 create database container with one command -> automate
 
 easy for later scalibiliy and deployment.
+
+### SQLC
+1. converting schema to table enetity (read by need, if one table is selected by query, it will then look for schema that build this table under schema path, then convert it to a entity object)
+2. db.go is a dependency object of the database object, it's capable of running queries that generated from account.db
+3. account.db are queries in go converted from query sql file under query folder
+4. sqlc generate is based on the defined sqlc.yaml file under the work directory
+
+#### if not call function of the module directly, go formtter might remove it, keep by 
+
+```go
+_ "github.com/lib/pg"
+go mod tidy -> remove the /indirect tag
+```
+
+### Go Testify
+1. write test cases
+2. single test case should be independent of each other
+3. using math/rand, and MakeFile go test to automate the process
+4. fastify can validate certain arguments
+
+```bash
+go test -v -cover ./...
+
+```
+
+### Transaction
+1. create a transfer record with amount = 10
+2. create an account entry for account1 with amount = -10
+3. create entry for account 2
+4. subtract 10 from account 1
+5. add 10 to account 1
+
+1. providate a reliable and consist unit of work even in case of system failure
+2. provide isolation between programs access the database concurrently
+
+#### ACID property
+1. atomicity
+2. consistency
+3. isolation
+4. durability
+
+
+### Deadlock
+1. Deadlock can be resulted from operations in the database that referencing the same column even without changing it
+2. KEYWORD like FOR NO KEY UPDATE can prevent deadlocking occurs from same referencing
+3. transaction should be wrapped
+4. deadlock debugging should follow test-driven development (TDD) pattern or method
+5. deadlock can also caused by concurrent interactive exchange/update of data, which can be prevented from logic
+
+Consistency
+- dirty read
+- non-repeatable read
+- phantom read
+- serialization anomaly
+
+4 standard isolation levels
+- read uncommitted
+- read committed
+- repeatable read
+- serializable
+

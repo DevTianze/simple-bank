@@ -101,3 +101,38 @@ Consistency
 - repeatable read
 - serializable
 
+### Github Action
+1. build up Go env
+2. re-test on main change
+3. using postgres container as service
+4. adding Mirgrate package to github action
+5. run test after run migrations
+
+Takeaway? Github action is very good service deploy and CI tool that can seperates workflows into steps.
+
+
+### Gin Get Request
+1. server struct takes db object, gin engine.(pointers) This can be more efficient and reduce memory usage, especially when dealing with large data structures.
+2. server calls methods, main argument of the methods are gin.Context and url arguments
+3. var req createAccountRequest takes in the arguments
+4. ShouldBindJSON(&req) ShouldBindUri(&req) ShouldBindQuery(&req) desctrue the arguments from request
+5. http.<> indicates the server status
+
+
+SERVER_ADDRESS=0.0.0.0:8081 make server
+
+### Viper
+1. basically, it's dotenv of javascript
+2. it has features like live watching and remote variable changing
+
+
+### mock database testing
+1. independent tests
+2. faster tests
+3. 100% coverage
+1. by using Fake DB: as Memory
+2. DB stubs: GOMOCK
+
+Gin and Viper added
+go install github.com/golang/mock/mockgen@v1.6.0
+go mock added

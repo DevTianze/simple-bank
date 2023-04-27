@@ -183,3 +183,26 @@ RUN go build -o main main.go (building our project into a binary file called mai
 EXPOSE 8080 (inform docker that docker listens on this PORT)
 CMD ["/app/main"] call execuatable file
 ```
+
+```bash
+docker build -t simplebank:latest .
+```
+last . meaning which directory should be built
+all we need is a binary, so ... we can only need to have the binary under the docker image 
+
+```Dockerfile
+FROM golang:1.20-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN go build -o main main.go
+
+# Run stage
+FROM alpine3.13 # basic image of linux run stage
+WORKDIR /app
+COPY --from=builder /app/main .
+
+# copy from builder stage, copy from /app/main, target location of that image
+
+EXPOSE 8080
+CMD ["/app/main"]
+```

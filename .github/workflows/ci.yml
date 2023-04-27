@@ -52,6 +52,10 @@ jobs:
         sudo mv migrate.linux-amd64 /usr/bin/migrate
         which migrate
 
+    - name: Run migration down first
+      run : make migratedown
+
+      
     - name: Run migrations
       run: make migrateup 
 

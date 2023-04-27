@@ -168,3 +168,18 @@ users should only have access to their own information
 using middleware to narrowing use's information as part of the payload, and therefore the payload will be used as query parameter into the handler function.
 
 ### 23/63 it's production use capable now -> dockerize
+new branch -> merge master after being reviewed and tested
+```zsh
+git checkout -b <newBranchName>
+
+git push origin ft/docker
+```
+
+```Dockerfile
+FROM base image
+WORKDIR working directory inside the image
+COPY .(copy everything from current folder) .(current working directory inside the image)
+RUN go build -o main main.go (building our project into a binary file called main)
+EXPOSE 8080 (inform docker that docker listens on this PORT)
+CMD ["/app/main"] call execuatable file
+```

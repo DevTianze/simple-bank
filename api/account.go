@@ -2,19 +2,16 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 
 	db "github.com/DevTianze/simple-bank/db/sqlc"
+	"github.com/DevTianze/simple-bank/token"
 	"github.com/gin-gonic/gin"
 )
 
-func errorResponse(err error) gin.H {
-	return gin.H{"error": err.Error()}
-}
-
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`            // binding:"required" means that the field is required
-	Currency string `json:"currency" binding:"required,currency` // binding:"required,oneof=USD EUR" means that the field is required and must be either USD or EUR
+	Currency string `json:"currency" binding:"required, currency"` // binding:"required,oneof=USD EUR" means that the field is required and must be either USD or EUR
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
@@ -24,8 +21,9 @@ func (server *Server) createAccount(ctx *gin.Context) {
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.CreateAccountParams{
-		Owner:    req.Owner,
+		Owner:    authPayload.Username,
 		Currency: req.Currency,
 	}
 
@@ -41,10 +39,6 @@ func (server *Server) createAccount(ctx *gin.Context) {
 // start runs the HTTP server on a specific address
 // q: why do i need to define start() here
 // a: because we want to start the server from main.go
-
-func (server *Server) Start(address string) error {
-	return server.router.Run(address)
-}
 
 type getAccountRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
@@ -67,6 +61,12 @@ func (server *Server) getAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	if account.Owner != authPayload.Username {
+		err := errors.New("account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
 
 	ctx.JSON(http.StatusOK, account)
 }
@@ -83,7 +83,10 @@ func (server *Server) listAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	arg := db.ListAccountsParams{
+		Owner:  authPayload.Username,
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}

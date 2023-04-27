@@ -159,4 +159,12 @@ Constraint is better than unique key that consists two elements
 when controller can potentially receives object that contains more complicated column, (think of enum that have possibly 100 values), validate can modularize this checking process by defining function outside the data entity struct
 
 
-### bcrypt hashing
+### bcrypt hashing + JWT
+nearly same procedure as I implemented with ExpressJS
+Unit Testing is bit funky in verify the token for login, look it up for more detail
+
+### Authentication + user priviliages
+users should only have access to their own information
+using middleware to narrowing use's information as part of the payload, and therefore the payload will be used as query parameter into the handler function.
+
+### 23/63 it's production use capable now -> dockerize

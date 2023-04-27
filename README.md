@@ -181,5 +181,5 @@ WORKDIR working directory inside the image
 COPY .(copy everything from current folder) .(current working directory inside the image)
 RUN go build -o main main.go (building our project into a binary file called main)
 EXPOSE 8080 (inform docker that docker listens on this PORT)
-CMD ["/app/main"]
+CMD ["/app/main"] call execuatable file
 ```

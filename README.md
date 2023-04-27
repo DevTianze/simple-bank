@@ -206,3 +206,29 @@ COPY --from=builder /app/main .
 EXPOSE 8080
 CMD ["/app/main"]
 ```
+
+```bash
+docker run --name simplebank -p 8080:8080 simplebank:latest
+docker run --name simplebank -p 8080:8080 -e GIN_MODE=release simplebank:latest
+docker container inspect
+docker container inspect simplebank
+docker run --name simplebank -p 8080:8080 -e GIN_MODE=release -e DB_SOURCE="postgresql://root:qwer1234@172.17.0.3:5432/simple_bank?sslmode=disable" simplebank:latest
+
+docker network ls see networks 
+docker network inspect bridge
+docker network --help
+```
+
+create our own network
+
+```zsh
+docker network create bank-network
+
+docker network connect --help
+
+docker network connect bank-network postgres12
+
+docker run --name simplebank --network bank-network -p 8080:8080 -e GIN_MODE=release simplebank:latest
+```
+container can connect to multiple networks at the same time, in this case, bank-network we created and bridge network
+

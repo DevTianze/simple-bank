@@ -171,4 +171,6 @@ using middleware to narrowing use's information as part of the payload, and ther
 new branch -> merge master after being reviewed and tested
 ```zsh
 git checkout -b <newBranchName>
+
+git push origin ft/docker
 ```

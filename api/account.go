@@ -1,6 +1,7 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	db "github.com/DevTianze/simple-bank/db/sqlc"
@@ -12,8 +13,8 @@ func errorResponse(err error) gin.H {
 }
 
 type createAccountRequest struct {
-	Owner    string `json:"owner" binding:"required"`                  // binding:"required" means that the field is required
-	Currency string `json:"currency" binding:"required,oneof=USD EUR"` // binding:"required,oneof=USD EUR" means that the field is required and must be either USD or EUR
+	Owner    string `json:"owner" binding:"required"`            // binding:"required" means that the field is required
+	Currency string `json:"currency" binding:"required,currency` // binding:"required,oneof=USD EUR" means that the field is required and must be either USD or EUR
 }
 
 func (server *Server) createAccount(ctx *gin.Context) {
@@ -51,7 +52,6 @@ type getAccountRequest struct {
 
 func (server *Server) getAccount(ctx *gin.Context) {
 	var req getAccountRequest
-	// shouldBindUri() is used to bind the request parameters to the struct, it defers from shouldBindJSON() which is used to bind the request body to the struct
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -59,6 +59,11 @@ func (server *Server) getAccount(ctx *gin.Context) {
 
 	account, err := server.store.GetAccount(ctx, req.ID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -82,11 +87,11 @@ func (server *Server) listAccount(ctx *gin.Context) {
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
-	account, err := server.store.ListAccounts(ctx, arg)
+	accounts, err := server.store.ListAccounts(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, account)
+	ctx.JSON(http.StatusOK, accounts)
 }

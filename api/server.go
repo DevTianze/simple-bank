@@ -3,6 +3,8 @@ package api
 import (
 	db "github.com/DevTianze/simple-bank/db/sqlc"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	_ "github.com/golang/mock/mockgen/model"
 )
 
@@ -17,14 +19,20 @@ func NewServer(store db.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("currency", validCurrency)
+	}
+	router.POST("/users", server.createUser)
+
 	router.POST("/accounts", server.createAccount)
 	router.GET("/accounts/:id", server.getAccount)
 	router.GET("/accounts", server.listAccount)
 	// add routes to router
+	router.POST("/transfers", server.createTransfer)
+
 	server.router = router
 	return server
 }
-
 
 // q: what's a struct pointer? what does it do?
 // a: it's a pointer to a struct, it's used to pass a struct by reference
@@ -58,19 +66,17 @@ func NewServer(store db.Store) *Server {
 //   the store.CreateAccount function takes a pointer to a CreateAccountParams struct as an argument
 //   the store.CreateAccount function modifies the CreateAccountParams struct
 
-
 // a: how does that count as a modify?
 // q: because the CreateAccountParams struct is modified by the store.CreateAccount function
 
 // q: what has it to do with the pointer of store?
 // a: the store is a pointer to a struct, so when you call the store.CreateAccount function, you are modifying the struct
 
-// q: do you mean that store struct does not have a CreateAccount function before? 
+// q: do you mean that store struct does not have a CreateAccount function before?
 // a: yes, the store struct does not have a CreateAccount function before
 
 // q: therefore, as I called it to use a function it doesn't have before, that's a modification?
 // a: yes, that's a modification
-
 
 // q: why don't I just change the store struct without using a pointer?
 // a: because you want to modify the store struct, not just read it

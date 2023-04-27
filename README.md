@@ -1,3 +1,7 @@
+## why ths readme file? 
+This was a hard course to me, as I don't have much experience with Go, kubernetes, gRPC nor unit testing.
+this file keeps me in track with the materials, keyword, and comments, frameworks that I learned through the course.
+
 ### Migrate
 1. migrate folder -> up schema: sql schema queries that build up the database, generated from dbdiagram.io
 2. migrate folder -> down schema: drop all the existing tables, write by developer.
@@ -136,3 +140,23 @@ SERVER_ADDRESS=0.0.0.0:8081 make server
 Gin and Viper added
 go install github.com/golang/mock/mockgen@v1.6.0
 go mock added
+
+go get github.com/go-playground/validator/v10
+
+
+### mock testing with mockgen
+mockgen db/mock -> generate struct and functions for all the existing db entity testing
+
+using TestCases struct array for testing one by one 
+
+basically, mock create controller, store, server local controller and recorder for sending requests/receiving responses without actually hosting a server, it can fake database error or server error for actual controller to receive, therefore compare the actual response with the expected response from the real controller.
+
+### migrate down/up 1
+migrate one version up or down with migrate module.
+Constraint is better than unique key that consists two elements
+
+### validator
+when controller can potentially receives object that contains more complicated column, (think of enum that have possibly 100 values), validate can modularize this checking process by defining function outside the data entity struct
+
+
+### bcrypt hashing

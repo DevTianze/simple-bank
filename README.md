@@ -263,3 +263,13 @@ However, it might still fail since the API service might start before the migrat
 
 ### wait for tool
 after re-define the entrypoint under docker compose file, the cmd and entrypoint in dockerfile will be ignored.
+
+### create and push new branch 
+
+```bash
+❯ git checkout -b ft/ci-build-image     
+Switched to a new branch 'ft/ci-build-image'
+
+simple-bank on  ft/ci-build-image [$] via 🐹 v1.20.3 
+❯ git push origin ft/ci-build-image
+```

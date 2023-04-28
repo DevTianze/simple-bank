@@ -273,3 +273,17 @@ Switched to a new branch 'ft/ci-build-image'
 simple-bank on  ft/ci-build-image [$] via 🐹 v1.20.3 
 ❯ git push origin ft/ci-build-image
 ```
+
+Checkout code is necessary in helping setting up the Go environment
+
+### create and push new branch 
+
+```bash
+❯ git checkout -b ft/ci-build-image     
+Switched to a new branch 'ft/ci-build-image'
+
+simple-bank on  ft/ci-build-image [$] via 🐹 v1.20.3 
+❯ git push origin ft/ci-build-image
+```
+
+Checkout code is necessary in helping setting up the Go environment

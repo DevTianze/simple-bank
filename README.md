@@ -287,3 +287,35 @@ simple-bank on  ft/ci-build-image [$] via 🐹 v1.20.3
 ```
 
 Checkout code is necessary in helping setting up the Go environment
+
+
+### JQ + ECR
+after successfully JQed the response from secrets-manager, I put the command into the github action as a run, therefore, everytime before github action's build the image, the password will be replaced by the response that came from aws secret-manager
+
+github making new branch guide
+```zsh
+git checkout . -> discard changes in the working directory
+git checkout -b ft/secrets_manager -> new branch created named *ft/secrets_manager* , and switched to this new branch
+git status -> check difference
+git add .
+git commit -m "df"
+git push origin ft/secrets-manager -> origin specifies the remote repo, where git push sends local change to remote repo.
+# origin is the default name of remote repo
+```
+
+### docker pull image from private registry from AWS ECR
+
+```
+aws ecr get-login-password
+aws ecr get-login-password | docker login --username AWS --password-stdin 927683992336.dkr.ecr.us-east-1.amazonaws.com
+
+docker pull 927683992336.dkr.ecr.us-east-1.amazonaws.com/simple-bank:b951295ddc1d1d7e31a6b3ea8b91e685ae008852
+
+```
+link here stands for image URI, note that first link 'simple bank' image info is removed as it means for a registry
+
+It wouldn't be able to run, since start.sh used $DB_SOURCE that only can be obtained from a github action RUN command that JQed credential
+
+JQed crediential is permitted in github cloud is because the login step was executed before
+
+source app.env

@@ -317,5 +317,47 @@ link here stands for image URI, note that first link 'simple bank' image info is
 It wouldn't be able to run, since start.sh used $DB_SOURCE that only can be obtained from a github action RUN command that JQed credential
 
 JQed crediential is permitted in github cloud is because the login step was executed before
-
+```
 source app.env
+echo $DB_SOURCE
+
+```
+```sh
+git checkout main -> switch to main branch
+git pull !!! -> update local main first
+git checkout -b ft/loadenv
+git status
+git add .
+git commit -m "-"
+git push origin ft/load_env
+```
+
+### Why is safer this way?
+1. app.env is either needed in the repo
+2. it's only generated in the fly after github action took care of it(how? AWS login first, then AWS secrets-manager retreive the credential -> JQed into the app.env)
+3. we can change the credential as much as we want, github action deploy will replace it with a deploy action re-run
+
+
+### Kubernetes's componenets
+
+1. Worker Node: 
+   1. kubelet agent: make sure containers run inside pods
+   2. container runtimes: docker
+   3. kube-proxy: maintain network rules, allow communication with pods
+2. Control plane - master node
+   1. manage the worker nodes and pods of the cluster
+      1. API server, frontend of the control plane, exposes k8s api to interact with all other componenets of the cluster
+      2. persistence store etcd -> backing store for all cluster data
+      3. schedular -> watch newly created pods with no assigned nodes and select nodes for them to run on
+      4. controller manager, combination of serveral controllers, such as :
+         1. node controller -> noticing and responding when nodes go down
+         2. job controller -> watches for jobs and create pods to run them
+         3. endpoint controller -> populates the endpoints object, or join services and pods
+         4. service accounts and token controller, create default account and API access tokens for new namespaces
+      5. cloud controller manager -> link cluster to cloud provider's api
+         1. node controller -> check with cloud
+         2. route controller -> setting up routes 
+         3. service controller -> creating, updating, deleting cloud load balancer 
+   
+
+master node is created by AWS

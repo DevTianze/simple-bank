@@ -361,3 +361,90 @@ git push origin ft/load_env
    
 
 master node is created by AWS
+
+### Kubectl
+default config file at .cube/config
+```sh
+aws eks update-kubeconfig --name simple-bank --region us-east-2
+```
+failed because haven't granded user permission for such operation -> go to IAM
+created inline policy for EKSFullACcess
+```sh
+aws configure
+aws eks update-kubeconfig --name simple-bank --region us-east-2
+```
+```sh
+kubectl config use-context arn:aws:eks:us-east-2:927683992336:cluster/simple-bank
+```
+use kubectl config use-context to select the context I want to connect to
+
+```sh
+kubectl cluster-info
+```
+only amazon cluster creator can review it, otherwise we have to add permission
+
+```sh
+aws sts get-caller-identity
+```
+get current aws user status
+```sh
+cat \.aws\credentials
+
+kubectl get pods
+kubectl cluster-info
+```
+```sh
+export AWS_PROFILE=github
+# set in windows
+```
+
+after declaring a aws-auth.yaml file under the working directory, we are then need to ```kubectl apply -f eks/aws-auth.yaml``` so that the user permissions can be mapped onto the github-ci user
+
+```powershell
+setx /m AWS_PROFILE github
+echo $Env:AWS_PROFILE
+```
+
+```sh
+kubectl cluster-info
+kubectl get service
+kubectl get pods
+choco install k9s
+
+```
+type *:* to switch namespace, then **ns enter** show all available namespaces of the cluster
+
+:service
+:pod
+:cj -> cronjob
+:node
+:configmap
+:deployments
+d to describe selected target
+
+### kubernetes deployment
+
+```sh
+kubectl apply -f eks/deployment.yaml
+```
+use kubectl to deployment the images onto the EKS server by defining a deployment.yaml file under the hood
+
+Still can't deploy after 1 pod was hosted under the node group how?
+
+Since each node consists of 4 pods, and 4 pods are already occupied by four system pods, therefore, no more pod is available for our projet image
+
+#### number of pods that allowed to run on a EC2 instance is based on the # of elastic network interface (ENI) and # of IPs per ENI allowed on that instance
+
+number of pods can be derived from a calculation (input is # eni and # of ips per eni)
+
+ENI defers by each instance -> 2 eni for t3-micro
+
+delete the old node group -> create new one with t3-small
+
+```sh
+kubectl get pods
+aws secretsmanager get-secret-value --secret-id simple_bank --query SecretString --output text
+aws secretsmanager get-secret-value --secret-id simple_bank --query SecretString --output text | jq 'to_entries|map("\(.key)=\(.value)")
+kubectl logs simple-bank-api-deployment-788894c9bd-l8tqq
+
+```

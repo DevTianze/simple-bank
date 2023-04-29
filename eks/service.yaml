@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-bank-api-service
+spec:
+  selector:   # select which pods to manage with this service
+    app: simple-bank-api # all pods with this label will be managed by this service
+  ports:
+    - protocol: TCP
+      port: 80 # the port exposed by the service
+      targetPort: 8080  # the port exposed by the container
+  type: LoadBalancer # the type of service to create

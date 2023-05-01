@@ -487,3 +487,5 @@ can't get response from pods? why? tcp inbound rule isn't set for the security g
 Deploy service onto kubernetes serice, where each copy of serivce (replica) is wrapped into a pod, and multiple pods can be put inside one node, where one node is one underlined computed instance. For t3.small, the maximum capacity is 11 pods, 4 are service-side. cluster can read its log by TCP port 10250 set on for inbound rule.
 
 Service is also set for mapping container port to service port, loadbalancer then distribute the incoming requests onto different pods that have the same selector. 
+
+AWS-auth.ymal maps the permission from Default user (cluster creator) to user github-cl. Since cluster creator shall have the rights to deploy service onto its created cluster.

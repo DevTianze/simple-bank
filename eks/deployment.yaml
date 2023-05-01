@@ -5,7 +5,7 @@ metadata:
   labels:
     app: simple-bank-api
 spec: # define how the deployment should work
-  replicas: 1 # number of pods to run
+  replicas: 2 # number of pods to run
   selector: # select which pods to manage with this deployment
     matchLabels:
       app: simple-bank-api # all pods with this label will be managed by this deployemnt
@@ -16,6 +16,6 @@ spec: # define how the deployment should work
     spec: # define the pods specifications
       containers: # define the containers within the pod
       - name: simple-bank-api
-        image: 927683992336.dkr.ecr.us-east-2.amazonaws.com/simple-bank:51fc6dfb21f55f9688a4490024fd91285c0adbd7
+        image: 927683992336.dkr.ecr.us-east-2.amazonaws.com/simple-bank:283d9f9582d98c12f6796c9d814277091c93ac25
         ports:
         - containerPort: 8080

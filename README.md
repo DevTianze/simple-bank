@@ -446,5 +446,46 @@ kubectl get pods
 aws secretsmanager get-secret-value --secret-id simple_bank --query SecretString --output text
 aws secretsmanager get-secret-value --secret-id simple_bank --query SecretString --output text | jq 'to_entries|map("\(.key)=\(.value)")
 kubectl logs simple-bank-api-deployment-788894c9bd-l8tqq
-
+kubectl apply -f eks/deployment.yaml
 ```
+
+### The service is now hosted inside a pod's container, question now is how do we send the API request to
+in order to route traffic from the outside world to the pod, we need to deploy service kubernetes object
+
+service is abtraction object, load balancing will be handdled automatically, pods of the same deployment will share the same internal DNS
+
+```sh
+kubectl apply -f eks/service.yaml
+```
+this gives us the internal service IP
+If we don't specify anything, default will be ClusterIP by service.yaml
+
+```sh
+nnslookup ab2ec9f88acf64693bdf81257ace1726-2146272261.us-east-2.elb.amazonaws.com # look up the exteral ip from the service
+docker run -d -p 8080:8080 36ee2e1cddcb
+kubectl describe pod  simple-bank-api-deployment-564cb478dc-v7hl7
+```
+right now, I can only send request to a81f24223a09c480d8ac182a022fef91-141979027.us-east-2.elb.amazonaws.com:80
+instead of http://a81f24223a09c480d8ac182a022fef91-141979027.us-east-2.elb.amazonaws.com
+
+### why?
+
+Missing a inbound rule, HTTP rule that source all the requests to PORT 80, Port 80 is the loadbalancer port.
+
+Tianze qwer1234
+
+Again, stream logs failed Get "https://172.31.45.68:10250/containerLogs/default/simple-bank-api-deployment-564cb478dc-v7hl7/simple-bank-api?follow=true&sinceSeconds=300&tailLines=100&timestamps=true": dial tcp 172.31.45.68:10250: i/o time 
+
+can't get response from pods? why? tcp inbound rule isn't set for the security group. Need to set that for EC2, AllTCP type free range.
+
+:nodes
+:services
+
+
+### what did we achieve in this section?
+
+Deploy service onto kubernetes serice, where each copy of serivce (replica) is wrapped into a pod, and multiple pods can be put inside one node, where one node is one underlined computed instance. For t3.small, the maximum capacity is 11 pods, 4 are service-side. cluster can read its log by TCP port 10250 set on for inbound rule.
+
+Service is also set for mapping container port to service port, loadbalancer then distribute the incoming requests onto different pods that have the same selector. 
+
+AWS-auth.ymal maps the permission from Default user (cluster creator) to user github-cl. Since cluster creator shall have the rights to deploy service onto its created cluster.
